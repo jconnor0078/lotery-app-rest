@@ -1,0 +1,11 @@
+{
+  "name": "lotery-app-rest",
+  "version": "1.0.0",
+  "description": "rest api para la aplicacion de jugadas de loteria",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jefferson Connor",
+  "license": "MIT"
+}
