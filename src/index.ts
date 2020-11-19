@@ -1,13 +1,12 @@
-import express, { Application } from 'express';
-import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
-import mongoose from 'mongoose';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import express, { Application } from "express";
+import bodyParser from "body-parser";
 
-// const routes = require('./routes/v1');
+import mongoose from "mongoose";
+import routes from "./routes/v1";
+import varConfig from "./modules/config";
 
-dotenv.config();
-
-const PORT = process.env.PORT || 4000;
+const PORT = varConfig.port || 4000;
 
 const app: Application = express();
 
@@ -17,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-// routes(app);
+routes(app);
 
 mongoose
   .connect(process.env.MONGO!, {
@@ -27,11 +26,11 @@ mongoose
     useCreateIndex: true,
   })
   .then(() => {
-    console.log('Conected to Mongo DB');
+    console.log("Conected to Mongo DB");
     app.listen(PORT, () => {
       console.log(`running on ${PORT} PORT`);
     });
   })
   .catch((error) => {
-    console.log('ERROR MONGO DB: ', error);
+    console.log("ERROR MONGO DB: ", error);
   });
