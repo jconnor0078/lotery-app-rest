@@ -35,6 +35,7 @@
         "quotes":"off",
         "import/prefer-default-export":"off",
         "import/extensions":"off",
-        "@typescript-eslint/no-empty-interface":"off"
+        "@typescript-eslint/no-empty-interface":"off",
+        "@typescript-eslint/no-namespace":"off"
     }
 }

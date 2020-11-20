@@ -20,7 +20,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
         // creando el token con su tiempo de expiracion
         const expiresTokenInt = parseInt(varConfig.expireToken, 10);
         const token = jwt.sign(
-          { userId: user._id, role: user.roles },
+          { userId: user._id, roles: user.roles },
           varConfig.secretJwt,
           {
             expiresIn: expiresTokenInt,
