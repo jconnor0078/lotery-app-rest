@@ -35,7 +35,7 @@ const updateLotery = async (req: Request, res: Response): Promise<void> => {
       });
       return;
     }
-    const data = await Loteries.findOneAndUpdate(loteryId, {
+    const data = await Loteries.findByIdAndUpdate(loteryId, {
       name,
       description,
       status,

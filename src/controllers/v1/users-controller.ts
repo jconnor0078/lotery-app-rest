@@ -10,7 +10,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
   try {
     console.log("method login -> req.body: ", {
       userName: req.body.userName,
-      password: "*******"
+      password: "*******",
     });
     const { userName, password } = req.body;
     const user = await Users.findOne({ userName });
@@ -96,6 +96,7 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
     user.userName = userName;
     user.password = hash;
     user.roles = roles;
+    user.creatorUser = req.sessionData.userId;
     await user.save();
 
     res.send({ status: "OK", message: "user created", data: null });
@@ -115,9 +116,9 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
       lastName,
       documentType,
       documentNumber,
+      birthday,
       email,
       address,
-      birthday,
       phone1,
       phone2,
       phone3,
@@ -140,9 +141,9 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
       lastName,
       documentType,
       documentNumber,
+      birthday,
       email,
       address,
-      birthday,
       phone1,
       phone2,
       phone3,
@@ -150,6 +151,7 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
       imageDocument,
       userName,
       roles,
+      modifierUser: req.sessionData.userId,
     });
 
     res.send({ status: "OK", message: "user updated", data: null });
@@ -186,7 +188,10 @@ const getUsers = async (req: Request, res: Response): Promise<void> => {
     //  le decimos que solo nos de ese campo y no los otros.
     // nota: no puede tener convinaciones de cero y uno,
     //  porque no se permiten convinaciones de inclucions y excluciones
-    const users = await Users.find().select({ password: 0, roles: 0, __v: 0 });
+    const users = await Users.find()
+      .select({ password: 0, roles: 0, __v: 0 })
+      .populate("creatorUser", "_id userName")
+      .populate("modifierUser", "_id userName");
 
     res.send({ status: "OK", message: "", data: users });
   } catch (error) {
