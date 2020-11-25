@@ -1,19 +1,25 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import varConfig from "../modules/config";
 
-const isValidHost = (req: Request, res: Response, next: NextFunction): void => {
-  const arrHost: string[] = ["localhost", "google.com"];
-  if (arrHost.includes(req.hostname)) {
-    next();
+const WHITE_LIST_HOSTS = varConfig.whiteListHosts.split(",");
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+const corsOptionsDelegate = (req: any, callback: any) => {
+  let corsOptions;
+  if (WHITE_LIST_HOSTS.indexOf(req.header("Origin")) !== -1) {
+    corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
   } else {
-    res.status(403).send({
-      status: "ACCESS_DENIED",
-      message: "host invalid.",
-      data: null,
-    });
+    corsOptions = { origin: false }; // disable CORS for this request
   }
+  if (!corsOptions.origin) {
+    callback(new Error("Not allowed by CORS"), corsOptions);
+  }
+  callback(null, corsOptions); // callback expects two parameters: error and options
 };
+
 const isAuth = (req: Request, res: Response, next: NextFunction): void => {
   try {
     const { token } = req.headers;
@@ -41,4 +47,4 @@ const isAuth = (req: Request, res: Response, next: NextFunction): void => {
   }
 };
 
-export { isValidHost, isAuth };
+export { corsOptionsDelegate, isAuth };

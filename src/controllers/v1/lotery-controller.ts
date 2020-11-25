@@ -12,7 +12,7 @@ const createLotery = async (req: Request, res: Response): Promise<void> => {
       name,
       description,
       status,
-      userCreator: req.sessionData.userId,
+      creatorUser: req.sessionData.userId,
     });
     res.send({ status: "OK", message: "lotery created", data });
   } catch (error) {
@@ -39,7 +39,7 @@ const updateLotery = async (req: Request, res: Response): Promise<void> => {
       name,
       description,
       status,
-      userModifier: req.sessionData.userId,
+      modifierUser: req.sessionData.userId,
     });
 
     res.send({ status: "OK", message: "user updated", data });

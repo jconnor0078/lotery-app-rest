@@ -1,10 +1,11 @@
+/* eslint-disable object-shorthand */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-shadow */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import express, { Application, Request } from "express";
 import bodyParser from "body-parser";
-
+import cors from "cors";
 import mongoose from "mongoose";
 import routes from "./routes/v1";
 import varConfig from "./modules/config";
@@ -23,6 +24,9 @@ declare global {
   }
 }
 // ****************************************************************** */
+
+// enable CORS without external module
+app.use(cors());
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
