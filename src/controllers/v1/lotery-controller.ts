@@ -76,7 +76,10 @@ const getLoteries = async (req: Request, res: Response): Promise<void> => {
     //  le decimos que solo nos de ese campo y no los otros.
     // nota: no puede tener convinaciones de cero y uno,
     //  porque no se permiten convinaciones de inclucions y excluciones
-    const loteries = await Loteries.find().select({ __v: 0 }).populate('userCreator', '_id userName').populate('userModifier', '_id userName');
+    const loteries = await Loteries.find()
+      .select({ __v: 0 })
+      .populate("userCreator", "_id userName")
+      .populate("userModifier", "_id userName");
 
     res.send({ status: "OK", message: "", data: loteries });
   } catch (error) {
