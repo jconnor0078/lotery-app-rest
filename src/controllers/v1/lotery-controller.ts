@@ -28,8 +28,8 @@ const updateLotery = async (req: Request, res: Response): Promise<void> => {
     const { loteryId, name, description, status } = req.body;
 
     if (!loteryId) {
-      res.status(400).send({
-        status: "BAD_REQUEST",
+      res.status(202).send({
+        status: "ACCEPT_WITH_BAD_REQUEST",
         message: "loteryId invalid.",
         data: null,
       });

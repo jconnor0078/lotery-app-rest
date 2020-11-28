@@ -5,28 +5,28 @@ import { corsOptionsDelegate, isAuth } from "../../middlewares/auth";
 
 const router = Router();
 
-router.post("/login", userController.login);
+router.post("/login", cors(corsOptionsDelegate), userController.login);
 router.post(
   "/create",
-  // cors(corsOptionsDelegate),
+  cors(corsOptionsDelegate),
   isAuth,
   userController.createUser
 );
 router.post(
   "/update",
-  // cors(corsOptionsDelegate),
+  cors(corsOptionsDelegate),
   isAuth,
   userController.updateUser
 );
 router.post(
   "/delete",
-  // cors(corsOptionsDelegate),
+  cors(corsOptionsDelegate),
   isAuth,
   userController.deleteUser
 );
 router.get(
   "/get-all",
-  // cors(corsOptionsDelegate),
+  cors(corsOptionsDelegate),
   isAuth,
   userController.getUsers
 );

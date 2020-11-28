@@ -136,4 +136,53 @@ const getTicketByCode = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export default { createTicket, getTickets, getTicketById, getTicketByCode };
+const cancelTicket = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { ticketCode } = req.body;
+    console.log(`method cancelTicket -> ${ticketCode}`);
+
+    if (!ticketCode) {
+      res.status(202).send({
+        status: "ACCEPT_WITH_BAD_REQUEST",
+        message: "ticketId invalid.",
+        data: null,
+      });
+      return;
+    }
+    const ticketCodeNum = parseInt(ticketCode, 10);
+    const tickets = await Tickets.findOne({
+      code: ticketCodeNum,
+      creatorUser: req.sessionData.userId,
+      statusTicket: 'created'
+    });
+    if (!tickets) {
+      res.status(202).send({
+        status: "ACCEPT_WITH_BAD_REQUEST",
+        message: "ticketId invalid.",
+        data: null,
+      });
+      return;
+    }
+    await Tickets.findOneAndUpdate(
+      { code: ticketCodeNum },
+      {
+        statusTicket: "canceled",
+        modifierUser: req.sessionData.userId,
+      }
+    );
+
+    res.send({ status: "OK", message: "ticket cancelled", data: null });
+  } catch (error) {
+    console.log("***ERROR CANCELLING TICKET BY CODE***", error.code, error);
+    const errorFormated = getError(error);
+    res.status(errorFormated.code).send(errorFormated.error);
+  }
+};
+
+export default {
+  createTicket,
+  getTickets,
+  getTicketById,
+  getTicketByCode,
+  cancelTicket,
+};

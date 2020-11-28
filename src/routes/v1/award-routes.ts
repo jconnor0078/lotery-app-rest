@@ -1,7 +1,7 @@
 import { Router } from "express";
 import cors from "cors";
 import { corsOptionsDelegate, isAuth } from "../../middlewares/auth";
-import loteryController from "../../controllers/v1/lotery-controller";
+import awardController from "../../controllers/v1/award-controller";
 
 const router = Router();
 
@@ -9,20 +9,20 @@ router.post(
   "/create",
   cors(corsOptionsDelegate),
   isAuth,
-  loteryController.createLotery
+  awardController.createAward
 );
 router.post(
   "/update",
   cors(corsOptionsDelegate),
   isAuth,
-  loteryController.updateLotery
+  awardController.updateAward
 );
 router.post(
   "/delete",
   cors(corsOptionsDelegate),
   isAuth,
-  loteryController.deleteLotery
+  awardController.deleteAward
 );
-router.get("/get-all", isAuth, loteryController.getLoteries);
+router.get("/get-all", isAuth, awardController.getAwards);
 
 export default router;

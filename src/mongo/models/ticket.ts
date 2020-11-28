@@ -8,7 +8,7 @@ export interface ITicket extends Document {
   regDate?: Date;
   statusTicket?: string;
   loteryPlays: { type: string; num: string; amount: number }[];
-  amountTotal: { type: number };
+  amountTotal: number;
   lotteries: ILotery[] | string[];
   superPaleLotteries?: ILotery[] | string[];
   creatorUser: IUser | string;

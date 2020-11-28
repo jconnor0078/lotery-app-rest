@@ -13,13 +13,13 @@ router.post(
 );
 router.get(
   "/get-all",
-  //  cors(corsOptionsDelegate),
+  cors(corsOptionsDelegate),
   isAuth,
   ticketController.getTickets
 );
 router.get(
   "/get-by-id/:ticketId",
-  // cors(corsOptionsDelegate),
+  cors(corsOptionsDelegate),
   isAuth,
   ticketController.getTicketById
 );
@@ -28,6 +28,12 @@ router.get(
   cors(corsOptionsDelegate),
   isAuth,
   ticketController.getTicketByCode
+);
+router.post(
+  "/cancel-ticket",
+  cors(corsOptionsDelegate),
+  isAuth,
+  ticketController.cancelTicket
 );
 
 export default router;
