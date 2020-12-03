@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import QRCode from "qrcode";
 import Tickets from "../../mongo/models/ticket";
 import getError from "../../mongo/models/error-helper";
+import { getAmountWinner } from "../../modules/ticket-module";
 
 const getDateUnique = (): string =>
   new Date().getDay().toString() +
@@ -153,7 +154,7 @@ const cancelTicket = async (req: Request, res: Response): Promise<void> => {
     const tickets = await Tickets.findOne({
       code: ticketCodeNum,
       creatorUser: req.sessionData.userId,
-      statusTicket: 'created'
+      statusTicket: "created",
     });
     if (!tickets) {
       res.status(202).send({
@@ -179,10 +180,144 @@ const cancelTicket = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+const consultTicket = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { ticketCode } = req.body;
+    console.log(`method consultTicket -> ${ticketCode}`);
+
+    if (!ticketCode) {
+      res.status(202).send({
+        status: "ACCEPT_WITH_BAD_REQUEST",
+        message: "ticketCode invalid.",
+        data: null,
+      });
+      return;
+    }
+    const ticketCodeNum = parseInt(ticketCode, 10);
+    // colocando en select el nombre del campo igual a cero,
+    //   le decimos que nos de todos los campos excepto ese
+    // si colocamos el nombre del campo igual a uno,
+    //  le decimos que solo nos de ese campo y no los otros.
+    // nota: no puede tener convinaciones de cero y uno,
+    //  porque no se permiten convinaciones de inclucions y excluciones
+    const tickets = await Tickets.findOne({ code: ticketCodeNum })
+      .populate("lotteries", "_id name peyPerWin")
+      .populate("superPaleLotteries", "_id name");
+
+    if (
+      !tickets ||
+      !tickets.statusTicket ||
+      tickets.statusTicket === "loser" ||
+      tickets.statusTicket === "canceled" ||
+      tickets.statusTicket === "paid"
+    ) {
+      res.status(202).send({
+        status: "ACCEPT_WITH_BAD_REQUEST",
+        message: `ticket ${
+          !tickets || !tickets.statusTicket ? "invalid" : tickets.statusTicket
+        }.`,
+        data: null,
+      });
+      return;
+    }
+    const amount = await getAmountWinner(tickets);
+    console.log("monto ganador? ", amount);
+    if (amount < 1) {
+      // ticket perdedor y cambiando su estado
+      await Tickets.findOneAndUpdate(
+        { code: ticketCodeNum },
+        {
+          statusTicket: "loser",
+          modifierUser: req.sessionData.userId,
+        }
+      );
+      res.status(202).send({
+        status: "ACCEPT_WITH_BAD_REQUEST",
+        message: "ticketCode loser.",
+        data: null,
+      });
+      return;
+    }
+
+    // ticket ganador y cambiando su estado
+    await Tickets.findOneAndUpdate(
+      { code: ticketCodeNum },
+      {
+        statusTicket: "winner",
+        amountToPaid: amount,
+        modifierUser: req.sessionData.userId,
+      }
+    );
+    res.send({ status: "OK", message: "", data: { amount } });
+  } catch (error) {
+    console.log("***ERROR CONSULTING TICKET BY CODE***", error.code, error);
+    const errorFormated = getError(error);
+    res.status(errorFormated.code).send(errorFormated.error);
+  }
+};
+
+const payTicket = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { ticketCode } = req.body;
+    console.log(`method payTicket -> ${ticketCode}`);
+
+    if (!ticketCode) {
+      res.status(202).send({
+        status: "ACCEPT_WITH_BAD_REQUEST",
+        message: "ticketCode invalid.",
+        data: null,
+      });
+      return;
+    }
+    const ticketCodeNum = parseInt(ticketCode, 10);
+    // colocando en select el nombre del campo igual a cero,
+    //   le decimos que nos de todos los campos excepto ese
+    // si colocamos el nombre del campo igual a uno,
+    //  le decimos que solo nos de ese campo y no los otros.
+    // nota: no puede tener convinaciones de cero y uno,
+    //  porque no se permiten convinaciones de inclucions y excluciones
+    const tickets = await Tickets.findOne({ code: ticketCodeNum });
+    if (
+      !tickets ||
+      !tickets.statusTicket ||
+      tickets.statusTicket !== "winner"
+    ) {
+      res.status(202).send({
+        status: "ACCEPT_WITH_BAD_REQUEST",
+        message: "ticket invalid.",
+        data: null,
+      });
+      return;
+    }
+    // ticket ganador y pagando ticket
+    await Tickets.findOneAndUpdate(
+      { code: ticketCodeNum },
+      {
+        statusTicket: "paid",
+        modifierUser: req.sessionData.userId,
+      }
+    );
+    res.send({
+      status: "OK",
+      message: "",
+      data: {
+        htmlStr: `<strong>Ticket Ganador, pagar: RD$ ${tickets.amountToPaid} pesos.</strong>`,
+        paidAmount: tickets.amountToPaid
+      },
+    });
+  } catch (error) {
+    console.log("***ERROR PAYING TICKET BY CODE***", error.code, error);
+    const errorFormated = getError(error);
+    res.status(errorFormated.code).send(errorFormated.error);
+  }
+};
+
 export default {
   createTicket,
   getTickets,
   getTicketById,
   getTicketByCode,
   cancelTicket,
+  consultTicket,
+  payTicket
 };

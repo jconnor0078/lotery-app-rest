@@ -9,6 +9,7 @@ export interface ITicket extends Document {
   statusTicket?: string;
   loteryPlays: { type: string; num: string; amount: number }[];
   amountTotal: number;
+  amountToPaid?: number;
   lotteries: ILotery[] | string[];
   superPaleLotteries?: ILotery[] | string[];
   creatorUser: IUser | string;
@@ -21,13 +22,14 @@ const ticketSchema: Schema = new Schema(
     regDate: { type: Date },
     statusTicket: {
       type: String,
-      enum: ["created", "loser", "winner", "canceled"],
+      enum: ["created", "loser", "winner", "canceled", "paid"],
       default: "created",
     },
     loteryPlays: {
       type: [{ type: Object, require: true }],
     },
     amountTotal: { type: Number, required: true },
+    amountToPaid: { type: Number },
     lotteries: [{ type: Schema.Types.ObjectId, ref: "Lotery", require: true }],
     superPaleLotteries: [
       {

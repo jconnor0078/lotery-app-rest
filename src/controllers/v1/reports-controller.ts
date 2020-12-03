@@ -25,24 +25,44 @@ const salesSummaryReport = async (
       isPaidTicket,
     } = req.body;
 
-    if (!from || from.toString().trim() === "") {
-      res.status(400).send({
-        status: "BAD_REQUEST",
+    if (
+      !from ||
+      from.toString().trim() === "" ||
+      from.split("-").length !== 3
+    ) {
+      res.status(202).send({
+        status: "ACCEPT_WITH_BAD_REQUEST",
         message: "field from invalid",
         data: null,
       });
       return;
     }
-    if (!to || to.toString().trim() === "") {
-      res.status(400).send({
-        status: "BAD_REQUEST",
+    if (!to || to.toString().trim() === "" || to.split("-").length !== 3) {
+      res.status(202).send({
+        status: "ACCEPT_WITH_BAD_REQUEST",
         message: "field to invalid",
         data: null,
       });
       return;
     }
-    const fromDate = new Date(`${from}T00:00:00.000+00:00`);
-    const toDate = new Date(`${to}T23:59:59.999+00:00`);
+    const fromDate = new Date(
+      from.split("-")[0],
+      from.split("-")[1] - 1,
+      from.split("-")[2],
+      0,
+      0,
+      0,
+      0
+    );
+    const toDate = new Date(
+      to.split("-")[0],
+      to.split("-")[1] - 1,
+      to.split("-")[2],
+      23,
+      59,
+      59,
+      999
+    );
     let awardsObj: any = null;
     let html = getHeaderSalesSummaryHtmlStr(fromDate, toDate, "Banca Maria");
 

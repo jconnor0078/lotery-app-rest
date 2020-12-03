@@ -17,18 +17,30 @@ const createAward = async (req: Request, res: Response): Promise<void> => {
       exist.lotery &&
       exist.lotery.toString().trim() === lotery.trim().toString()
     ) {
-      res.status(400).send({
-        status: "BAD_REQUEST",
+      res.status(202).send({
+        status: "ACCEPT_WITH_BAD_REQUEST",
         message: "this lotery has an award inserted with the same date.",
         data: null,
       });
       return;
     }
-
+    if (!playDate || playDate.split("-").length !== 3) {
+      res.status(202).send({
+        status: "ACCEPT_WITH_BAD_REQUEST",
+        message: "playDate bad format",
+        data: null,
+      });
+      return;
+    }
+    const tDate = new Date(
+      playDate.split("-")[0],
+      playDate.split("-")[1] - 1,
+      playDate.split("-")[2]
+    );
     const data = await Awards.create({
       nums,
       lotery,
-      playDate,
+      playDate: tDate,
       creatorUser: req.sessionData.userId,
     });
     res.send({ status: "OK", message: "award created", data });
@@ -54,13 +66,18 @@ const updateAward = async (req: Request, res: Response): Promise<void> => {
     }
 
     const exist = await Awards.findOne({
-      playDate,
+      $and: [
+        {
+          playDate,
+        },
+        {
+          lotery,
+        },
+      ],
     });
 
     if (
       exist &&
-      exist.lotery &&
-      exist.lotery.toString().trim() === lotery.toString().trim() &&
       exist._id.toString().trim() !== awardId.toString().trim()
     ) {
       res.status(400).send({
@@ -105,7 +122,7 @@ const deleteAward = async (req: Request, res: Response): Promise<void> => {
 
 const getAwards = async (req: Request, res: Response): Promise<void> => {
   try {
-    console.log("method getLoteries -> all: ");
+    console.log("method getAwards -> all: ");
 
     // colocando en select el nombre del campo igual a cero,
     //   le decimos que nos de todos los campos excepto ese
@@ -113,13 +130,13 @@ const getAwards = async (req: Request, res: Response): Promise<void> => {
     //  le decimos que solo nos de ese campo y no los otros.
     // nota: no puede tener convinaciones de cero y uno,
     //  porque no se permiten convinaciones de inclucions y excluciones
-    const loteries = await Awards.find()
+    const awards = await Awards.find()
       .select({ __v: 0 })
       .populate("lotery", "_id name")
       .populate("userCreator", "_id userName")
       .populate("userModifier", "_id userName");
 
-    res.send({ status: "OK", message: "", data: loteries });
+    res.send({ status: "OK", message: "", data: awards });
   } catch (error) {
     console.log("***ERROR SEARCHING ALL LOTERIES***", error.code, error);
     const errorFormated = getError(error);

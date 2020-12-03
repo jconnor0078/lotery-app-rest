@@ -6,11 +6,20 @@ import getError from "../../mongo/models/error-helper";
 const createLotery = async (req: Request, res: Response): Promise<void> => {
   try {
     console.log("method createLotery -> req.body: ", req.body);
-    const { name, description, status } = req.body;
+    const { name, description, peyPerWin, status } = req.body;
+
+    const payPerWinDouble = {
+      first: parseFloat(peyPerWin.first),
+      second: parseFloat(peyPerWin.second),
+      third: parseFloat(peyPerWin.third),
+      pale: parseFloat(peyPerWin.pale),
+      superPale: parseFloat(peyPerWin.superPale),
+    };
 
     const data = await Loteries.create({
       name,
       description,
+      peyPerWin: payPerWinDouble,
       status,
       creatorUser: req.sessionData.userId,
     });
@@ -25,7 +34,7 @@ const createLotery = async (req: Request, res: Response): Promise<void> => {
 const updateLotery = async (req: Request, res: Response): Promise<void> => {
   try {
     console.log("method updateLotery -> req.body: ", req.body);
-    const { loteryId, name, description, status } = req.body;
+    const { loteryId, name, description, peyPerWin, status } = req.body;
 
     if (!loteryId) {
       res.status(202).send({
@@ -35,14 +44,24 @@ const updateLotery = async (req: Request, res: Response): Promise<void> => {
       });
       return;
     }
+
+    const payPerWinDouble = {
+      first: parseFloat(peyPerWin.first),
+      second: parseFloat(peyPerWin.second),
+      third: parseFloat(peyPerWin.third),
+      pale: parseFloat(peyPerWin.pale),
+      superPale: parseFloat(peyPerWin.superPale),
+    };
+
     const data = await Loteries.findByIdAndUpdate(loteryId, {
       name,
       description,
+      peyPerWin: payPerWinDouble,
       status,
       modifierUser: req.sessionData.userId,
     });
 
-    res.send({ status: "OK", message: "user updated", data });
+    res.send({ status: "OK", message: "lotery updated", data });
   } catch (error) {
     console.log("***ERROR UPDATING LOTERY***", error.code, error);
     const errorFormated = getError(error);

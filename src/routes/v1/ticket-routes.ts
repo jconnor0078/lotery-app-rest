@@ -36,4 +36,18 @@ router.post(
   ticketController.cancelTicket
 );
 
+router.post(
+  "/consult-ticket",
+  cors(corsOptionsDelegate),
+  isAuth,
+  ticketController.consultTicket
+);
+
+router.post(
+  "/pay-ticket",
+  cors(corsOptionsDelegate),
+  isAuth,
+  ticketController.payTicket
+);
+
 export default router;
