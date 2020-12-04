@@ -9,7 +9,9 @@ export interface ILotery extends Document {
     first: number;
     second: number;
     third: number;
-    pale: number;
+    pale1st2nd: number;
+    pale1st3rd: number;
+    pale2nd3rd: number;
     superPale: number;
   };
   creatorUser: IUser | string;
@@ -24,7 +26,9 @@ const loterySchema: Schema = new Schema(
         first: Number,
         second: Number,
         third: Number,
-        pale: Number,
+        pale1st2nd: Number,
+        pale1st3rd: Number,
+        pale2nd3rd: Number,
         superPale: Number,
       },
       require: true,
