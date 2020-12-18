@@ -14,6 +14,7 @@ export interface ITicket extends Document {
   superPaleLotteries?: ILotery[] | string[];
   creatorUser: IUser | string;
   modifierUser?: IUser | string;
+  isSquare?: boolean;
 }
 const ticketSchema: Schema = new Schema(
   {
@@ -40,6 +41,7 @@ const ticketSchema: Schema = new Schema(
     ],
     creatorUser: { type: Schema.Types.ObjectId, ref: "User", require: true },
     modifierUser: { type: Schema.Types.ObjectId, ref: "User" },
+    isSquare: { type: Boolean, default: false },
   },
   {
     timestamps: true,

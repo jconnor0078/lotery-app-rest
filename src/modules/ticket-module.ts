@@ -140,6 +140,8 @@ const getAmountWinTrip = (loteryPlays: any, awards: any): number => {
         ];
         tripPlayArr.sort();
         tripAward.sort();
+        console.log("tripleta", tripPlayArr);
+        console.log("ganadores", tripAward);
         res = tripPlayArr.every((v, i) => v === tripAward[i]);
         if (res) {
           result += loteryPlay.amount * award.lotery.peyPerWin.trip;
@@ -187,6 +189,7 @@ const getAmountWinner = async (ticket: any): Promise<number> => {
   if (!awards || awards.length < 1) {
     return 0;
   }
+
   // buscando el monto ganador en quinielas
   result += getAmountWinQui(ticket.loteryPlays, awards);
   // buscando el monto ganador en Pale

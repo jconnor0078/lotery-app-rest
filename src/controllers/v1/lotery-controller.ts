@@ -12,7 +12,9 @@ const createLotery = async (req: Request, res: Response): Promise<void> => {
       first: parseFloat(peyPerWin.first),
       second: parseFloat(peyPerWin.second),
       third: parseFloat(peyPerWin.third),
-      pale: parseFloat(peyPerWin.pale),
+      pale1st2nd: parseFloat(peyPerWin.pale1st2nd),
+      pale1st3rd: parseFloat(peyPerWin.pale1st3rd),
+      pale2nd3rd: parseFloat(peyPerWin.pale2nd3rd),
       superPale: parseFloat(peyPerWin.superPale),
     };
 
@@ -49,7 +51,9 @@ const updateLotery = async (req: Request, res: Response): Promise<void> => {
       first: parseFloat(peyPerWin.first),
       second: parseFloat(peyPerWin.second),
       third: parseFloat(peyPerWin.third),
-      pale: parseFloat(peyPerWin.pale),
+      pale1st2nd: parseFloat(peyPerWin.pale1st2nd),
+      pale1st3rd: parseFloat(peyPerWin.pale1st3rd),
+      pale2nd3rd: parseFloat(peyPerWin.pale2nd3rd),
       superPale: parseFloat(peyPerWin.superPale),
     };
 
